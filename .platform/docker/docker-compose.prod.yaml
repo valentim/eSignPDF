@@ -3,10 +3,11 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
+      context: ./.platform/docker
       dockerfile: dockerfile.production
     ports:
       - "80:80"
+    container_name: app
     volumes:
       - ./:/var/www
       # - ./.platform/nginx/nginx.conf:/etc/nginx/

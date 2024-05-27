@@ -3,7 +3,7 @@ version: '3.8'
 services:  
   pdf-signer:
     build:
-      context: .
+      context: ./.platform/docker
       dockerfile: dockerfile
     image: pdf-signer
     container_name: pdf-signer
