@@ -92,9 +92,11 @@ jobs:
 
     - name: Run PHP tests
       run: |
-        docker-compose -f docker-compose.development.yaml up --build -d
-        docker-compose -f docker-compose.development.yaml exec pdf-signer php artisan test
+        docker-compose -f docker-compose.development.yaml up -d
+        docker-compose -f docker-compose.development.yaml exec -T pdf-signer php artisan test
       continue-on-error: false
+      env:
+        FORCE_COLOR: 1
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
