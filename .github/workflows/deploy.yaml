@@ -113,7 +113,7 @@ jobs:
     - name: Deploy to ECS
       run: |
         ecs-cli configure --cluster eideasy-cluster --region eu-central-1 --default-launch-type FARGATE --config-name eideasy-config
-        ecs-cli compose --file docker-compose.prod.yaml --project-name eideasy --ecs-params ecs-params.yaml --cluster-config eideasy-config service up
+        ecs-cli compose --file docker-compose.yaml --project-name eideasy --ecs-params ecs-params.yaml --cluster-config eideasy-config service up
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
