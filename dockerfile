@@ -8,22 +8,38 @@ RUN apk update && apk add --no-cache \
     libpq \
     libzip-dev \
     oniguruma-dev \
+    nginx \
+    nodejs \
+    npm \
+    curl \
+    git \
     && docker-php-ext-install \
     intl \
     pdo \
     pdo_mysql \
     zip \
-    mbstring
+    mbstring \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 COPY . .
 
-COPY .platform/custom-php.ini /usr/local/etc/php/conf.d/
+RUN npm install
+RUN npm run build
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY .platform/custom-php.ini /usr/local/etc/php/conf.d/
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www
+RUN chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 
-EXPOSE 8000
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+COPY .platform/nginx/nginx.conf /etc/nginx
+COPY .platform/nginx/default.conf /etc/nginx/conf.d/
+
+COPY .platform/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]

@@ -1,10 +1,23 @@
 version: '3.8'
 
-services:  
+services:
+  pdf-signer-test:
+      build:
+        context: .
+        dockerfile: dockerfile.development
+      container_name: pdf-signer-test
+      command: php artisan test
+      restart: unless-stopped
+      working_dir: /var/www
+      ports:
+        - "8000:8000"
+      env_file:
+        - .env
+
   pdf-signer:
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: dockerfile.development
     image: pdf-signer
     container_name: pdf-signer
     restart: unless-stopped
