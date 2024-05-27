@@ -13,7 +13,6 @@ class DocumentRepositoryImplTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Ensure that Document is properly mocked for each test
         Facade::clearResolvedInstance(Document::class);
     }
     
