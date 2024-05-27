@@ -1,4 +1,4 @@
-name: Deploy to AWS Elastic Beanstalk
+name: Deploy to AWS ECS
 
 on:
   push:
@@ -92,8 +92,9 @@ jobs:
 
     - name: Run PHP tests
       run: |
-        docker-compose -f docker-compose.development.yaml up -d
+        docker-compose -f docker-compose.development.yaml up --build -d
         docker-compose -f docker-compose.development.yaml exec pdf-signer php artisan test
+      continue-on-error: false
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
