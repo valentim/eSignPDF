@@ -60,7 +60,13 @@ Follow these steps to run the project locally.
     Open your browser and navigate to `http://localhost`.
 
 ## Project Structure
-Provide an overview of the project's structure, highlighting key directories and files.
+This project structure follows a layered architecture approach, which separates concerns and organizes code into distinct layers. Each layer has a specific responsibility, making the codebase easier to maintain, test, and scale. The key layers include:
+
+Application Layer: Contains business logic and services, encapsulating use cases and processes.
+Domain Layer: Defines the core domain models and repository interfaces, representing the business entities and their interactions.
+Infrastructure Layer: Manages external services, implementations of repositories, and other system-level concerns, ensuring separation from the domain logic.
+Presentation Layer: Handles the user interface and interaction, managing controllers and authentication.
+This organization promotes a clean separation of concerns, modularity, and easier testing, enabling a more scalable and maintainable codebase.
 
 ```
 app/
