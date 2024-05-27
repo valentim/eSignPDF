@@ -207,14 +207,20 @@ Follow these steps to set up the project locally.
 
 4. Build and start the containers:
     ```bash
-    docker-compose up -d --build
+    docker-compose -f docker-compose.development.yaml up -d --build
     ```
 
 5. Run database migrations:
     ```bash
-    // Note: If you are running MySQL inside docker, then you need to run inside the pdf-signer container
     php artisan migrate
     ```
+
+    If you are running MySQL inside docker, then you need to run inside the pdf-signer container:
+    ```bash
+    docker-compose -f docker-compose.development.yaml exec pdf-signer php artisan test
+    ```
+
+
 
 6. Build and start the frontend:
     ```bash
