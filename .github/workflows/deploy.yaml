@@ -92,7 +92,7 @@ jobs:
 
     - name: Run PHP tests
       run: |
-        docker-compose -f docker-compose.development.yaml up pdf-signer-test --build
+        docker-compose -f docker-compose.development.yaml up pdf-signer-test
       continue-on-error: false
       env:
         FORCE_COLOR: 1
