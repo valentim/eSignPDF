@@ -92,7 +92,8 @@ jobs:
 
     - name: Run PHP tests
       run: |
-        docker-compose -f docker-compose.development.yaml up pdf-signer-test
+        docker-compose -f docker-compose.development.yaml up pdf-signer-test -d
+        docker-compose -f docker-compose.development.yaml exec -T pdf-signer-test php artisan test
       continue-on-error: false
       env:
         FORCE_COLOR: 1
