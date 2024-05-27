@@ -18,5 +18,4 @@ yarn-error.log
 /.idea
 /.vscode
 artisan
-ecs-params.yaml
 ecs-trust-policy.json

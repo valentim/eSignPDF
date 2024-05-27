@@ -105,32 +105,16 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-central-1
 
-    - name: Update ECS service with new image
+    - name: Install ECS CLI
+      run: |
+        sudo curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest
+        sudo chmod +x /usr/local/bin/ecs-cli
+
+    - name: Deploy to ECS
+      run: |
+        ecs-cli configure --cluster eideasy-cluster --region eu-central-1 --default-launch-type FARGATE --config-name eideasy-config
+        ecs-cli compose --file docker-compose.prod.yaml --project-name eideasy --ecs-params ecs-params.yaml --cluster-config eideasy-config service up
       env:
-        AWS_REGION: eu-central-1
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        CLUSTER_NAME: eideasy-cluster
-        SERVICE_NAME: eideasy-service
-        CONTAINER_NAME: app
-        IMAGE_NAME: thiagosvalentim/eideasy-test:latest
-      run: |
-        # Get the current task definition JSON
-        TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition $SERVICE_NAME)
-
-        # Extract the container definition JSON
-        CONTAINER_DEFINITIONS=$(echo $TASK_DEFINITION_JSON | jq --arg IMAGE_NAME "$IMAGE_NAME" '.taskDefinition | .containerDefinitions[0].image=$IMAGE_NAME')
-
-        # Register a new task definition
-        NEW_TASK_DEFINITION=$(aws ecs register-task-definition \
-          --family $(echo $TASK_DEFINITION_JSON | jq -r .taskDefinition.family) \
-          --execution-role-arn $(echo $TASK_DEFINITION_JSON | jq -r .taskDefinition.executionRoleArn) \
-          --network-mode $(echo $TASK_DEFINITION_JSON | jq -r .taskDefinition.networkMode) \
-          --container-definitions "$CONTAINER_DEFINITIONS" \
-          --requires-compatibilities $(echo $TASK_DEFINITION_JSON | jq -r .taskDefinition.requiresCompatibilities) \
-          --cpu $(echo $TASK_DEFINITION_JSON | jq -r .taskDefinition.cpu) \
-          --memory $(echo $TASK_DEFINITION_JSON | jq -r .taskDefinition.memory))
-
-        # Update the ECS service to use the new task definition
-        NEW_TASK_DEFINITION_ARN=$(echo $NEW_TASK_DEFINITION | jq -r .taskDefinition.taskDefinitionArn)
-        aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $NEW_TASK_DEFINITION_ARN --force-new-deployment
+        AWS_REGION: eu-central-1

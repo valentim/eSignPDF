@@ -1,0 +1,19 @@
+version: 1
+task_definition:
+  task_execution_role: ecsTaskExecutionRole
+  ecs_network_mode: awsvpc
+  task_size:
+    mem_limit: 2048
+    cpu_limit: 1024
+run_params:
+  network_configuration:
+    awsvpc_configuration:
+      subnets:
+        - subnet-950195ff
+      security_groups:
+        - sg-a4008ade    # Replace with your actual security group ID
+      assign_public_ip: ENABLED
+load_balancer:
+  target_group_arn: arn:aws:elasticloadbalancing:eu-central-1:441094600186:loadbalancer/net/eideasy/fcd2c46464a92079
+  container_name: app
+  container_port: 80
