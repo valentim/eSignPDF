@@ -25,8 +25,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
-        context:
-          dockerfile.production
+        context: dockerfile.production
         push: true
         tags: thiagosvalentim/eideasy-test:latest
 

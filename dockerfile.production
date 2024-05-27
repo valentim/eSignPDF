@@ -40,5 +40,10 @@ RUN chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 COPY .platform/nginx/nginx.conf /etc/nginx
 COPY .platform/nginx/default.conf /etc/nginx/conf.d/
 
+COPY .platform/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
