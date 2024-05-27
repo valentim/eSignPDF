@@ -1,15 +1,9 @@
-// migrate
-docker-compose exec pdf-signer php artisan migrate
-php artisan cache:clear
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-composer dump-autoload
 
-# Project Name
+
+# ESignPDF
 
 ## Table of Contents
-- [Project Name](#project-name)
+- [ESignPDF](#esignpdf)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Requirements](#requirements)
@@ -21,70 +15,49 @@ composer dump-autoload
     - [Scenario 2: PDF Upload](#scenario-2-pdf-upload)
     - [Scenario 3: PDF Signature from Dashboard](#scenario-3-pdf-signature-from-dashboard)
     - [Scenario 4: File Size and Format Validation](#scenario-4-file-size-and-format-validation)
+  - [Local Development](#local-development)
   - [Deployment to Production](#deployment-to-production)
-  - [Contributing](#contributing)
-  - [License](#license)
 
 ## Introduction
-Provide a brief introduction to your project, what it does, and its main features.
+The project is an e-signature solution called ESignPDF. It allows users to upload PDF files for signature and provides a dashboard to manage the signed documents.
+
+Demo version can be view here: [Demo](http://eideasy.xyz)
+
+Below are the key features implemented in this project:
+
+Key Features
+1. Google Authentication with Socialite and Sanctum
+I have implemented Google authentication using Socialite and Sanctum, providing a seamless and secure login process. This integration simplifies user authentication while ensuring secure access to private documents.
+
+2. Secure File Storage on S3
+To maintain the security and integrity of our files, all documents are stored in Amazon S3. Access to these files is controlled through temporary signed URLs, adding an extra layer of security and ensuring that only authorized users can retrieve the documents.
+
+3. Modern Frontend with Vite and React
+The frontend is built using Vite and React, leveraging the latest in web development technologies for fast, efficient, and dynamic user interfaces. This setup provides a robust and responsive user experience.
+
 
 ## Requirements
 List all the dependencies and tools needed to run the project.
 - Docker
 - Docker Compose
-- Node.js & NPM (for front-end assets)
+- Node.js (version 20) & NPM (for front-end assets)
 
 ## Installation
-Follow these steps to set up the project locally.
+Follow these steps to run the project locally.
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/yourproject.git
-    cd yourproject
+    git clone https://github.com/valentim/eSignPDF.git
+    cd eSignPDF
     ```
 
-2. Copy the example environment file:
+2. Build and start the containers:
     ```bash
-    cp .env.example .env
+    docker-compose -f up -d --build
     ```
 
-3. Add your own credentails for AWS and Google. You can use the following Google envs values, but they can be deleted anytime
-   ```env
-    GOOGLE_CLIENT_ID=7409894092-1hddmrerg8q0usg49lri18u7jdefc7ns.apps.googleusercontent.com
-    GOOGLE_CLIENT_SECRET=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
-    GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
-
-    AWS_ACCESS_KEY_ID=""
-    AWS_SECRET_ACCESS_KEY=""
-    AWS_DEFAULT_REGION=""
-    AWS_BUCKET="e"
-    AWS_USE_PATH_STYLE_ENDPOINT=false
-    AWS_URL=""
-   ```
-
-4. Build and start the containers:
-    ```bash
-    docker-compose up -d --build
-    ```
-
-5. Run database migrations:
-    ```bash
-    docker-compose exec app php artisan migrate
-    ```
-
-6. Build and start the frontend:
-    ```bash
-    npm install
-    npm run dev
-    ```
-
-7. Run database migrations:
-    ```bash
-    php artisan migrate
-    ```
-
-8. Access the application:
-    Open your browser and navigate to `http://localhost:8000`.
+3. Access the application:
+    Open your browser and navigate to `http://localhost`.
 
 ## Project Structure
 Provide an overview of the project's structure, highlighting key directories and files.
@@ -136,11 +109,6 @@ app/
 1. Run the PHPUnit tests:
     ```bash
     php artisan test
-    ```
-
-2. Run any other relevant tests or linters:
-    ```bash
-    npm run lint
     ```
 
 ## Usage Scenarios
@@ -203,45 +171,59 @@ app/
 - The system validates the file size and format.
 - If the file exceeds the allowed size or is not a PDF, an alert message is displayed informing the user of the issue.
 
+## Local Development
+Follow these steps to set up the project locally.
 
-## Deployment to Production
-Explain the steps to deploy the application to a production environment.
-
-1. Set up your production environment.
-2. Clone the repository on the production server.
-3. Install dependencies:
+1. Clone the repository:
     ```bash
-    composer install --optimize-autoloader --no-dev
-    npm install --production
-    npm run build
+    git clone https://github.com/valentim/eSignPDF.git
+    cd eSignPDF
     ```
 
-4. Set up the environment file:
+2. Copy the example environment file:
     ```bash
     cp .env.example .env
-    php artisan key:generate
     ```
 
-5. Configure the `.env` file with production database credentials.
-6. Run database migrations:
+3. Add your own credentails for AWS and Google. You can use the following Google envs values, but they can be deleted anytime
+   ```env
+    GOOGLE_CLIENT_ID=7409894092-1hddmrerg8q0usg49lri18u7jdefc7ns.apps.googleusercontent.com
+    GOOGLE_CLIENT_SECRET=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
+    GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
+
+    AWS_ACCESS_KEY_ID=""
+    AWS_SECRET_ACCESS_KEY=""
+    AWS_DEFAULT_REGION=""
+    AWS_BUCKET="e"
+    AWS_USE_PATH_STYLE_ENDPOINT=false
+    AWS_URL=""
+   ```
+
+4. Build and start the containers:
     ```bash
-    php artisan migrate --force
+    docker-compose up -d --build
     ```
 
-7. Set up the correct permissions:
+5. Run database migrations:
     ```bash
-    chown -R www-data:www-data storage
-    chown -R www-data:www-data bootstrap/cache
+    // Note: If you are running MySQL inside docker, then you need to run inside the pdf-signer container
+    php artisan migrate
     ```
 
-8. Configure the web server (e.g., Nginx or Apache).
-9. Restart the web server.
+6. Build and start the frontend:
+    ```bash
+    npm install
+    npm run dev
+    ```
 
-## Contributing
-Provide guidelines for contributing to the project, such as how to submit pull requests or report issues.
+7. Access the application:
+    Open your browser and navigate to `http://localhost:8000`.
 
-## License
-Specify the license under which the project is distributed.
+## Deployment to Production
+The deployment process is automated using GitHub Actions triggered by a push to the main branch.
+GitHub Actions workflow (deploy.yaml) will perform the following steps:
 
-```markdown
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+1. Build the Docker image of the project.
+2. Clone the repository on the production server.
+3. Publish the Docker image to Docker Hub.
+4. Deploy the application to Amazon ECS using Fargate via ecs-cli commands.:
