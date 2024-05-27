@@ -7,42 +7,15 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Domain\User\User;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Log;
 
 class SocialiteController extends Controller
 {
-     /**
-     * @OA\Get(
-     *     path="/auth/google/redirect",
-     *     tags={"auth"},
-     *     summary="Redirect to Google authentication",
-     *     description="Redirect the user to Google's OAuth page for authentication",
-     *     @OA\Response(
-     *         response=302,
-     *         description="Redirect to Google's OAuth page"
-     *     )
-     * )
-     */
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->stateless()->redirect();
     }
 
-    /**
-     * @OA\Get(
-     *     path="/auth/google/callback",
-     *     tags={"auth"},
-     *     summary="Handle Google OAuth callback",
-     *     description="Handle the callback from Google's OAuth and log the user in or register them if they do not exist",
-     *     @OA\Response(
-     *         response=302,
-     *         description="Redirect to the application with an authentication token"
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Failed to authenticate with Google"
-     *     )
-     * )
-     */
     public function handleGoogleCallback()
     {
         try {
@@ -68,6 +41,7 @@ class SocialiteController extends Controller
 
             return redirect()->to('/auth?token=' . $token);
         } catch (\Exception $e) {
+            Log::error('Failed to login with Google', ['error' => $e->getMessage()]);
             return redirect('/')->with('error', 'Failed to login with Google, please try again.');
         }
     }

@@ -7,21 +7,27 @@ use Carbon\Carbon;
 class EIDEasyService
 {
     private Client $client;
+    private $clientId;
+    private $clientSecret;
+    private $url;
 
     public function __construct(Client $client)
     {
         $this->client = $client;
+        $this->clientSecret = config('EIDEASY_CLIENT_SECRET');
+        $this->clientId = config('EIDEASY_CLIENT_ID');
+        $this->url = config('EIDEASY_URL');
     }
 
     public function downloadSignedFile($document)
     {
-        $response = $this->client->post('https://test.eideasy.com/api/signatures/download-signed-file', [
+        $response = $this->client->post("{$this->url}/api/signatures/download-signed-file", [
             'headers' => [
                 'Content-Type' => "application/json",
             ],
             'json' => [
-                'secret' => "0s37f8TrEUmFfPWl8STSWXhfwtpsEtF6",
-                'client_id' => "mK0T3X4uX3tzrKqlTFO66nyj2zoeyk3r",
+                'secret' => $this->clientSecret,
+                'client_id' => $this->clientId,
                 'doc_id' => $document->doc_id,
             ],
         ]);
@@ -34,13 +40,13 @@ class EIDEasyService
 
     public function prepareFilesForSigning($fileContent, $document)
     {
-        $response = $this->client->post('https://test.eideasy.com/api/signatures/prepare-files-for-signing', [
+        $response = $this->client->post("{$this->url}api/signatures/prepare-files-for-signing", [
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
             'json' => [
-                'secret' => '0s37f8TrEUmFfPWl8STSWXhfwtpsEtF6',
-                'client_id' => 'mK0T3X4uX3tzrKqlTFO66nyj2zoeyk3r',
+                'secret' => $this->clientSecret,
+                'client_id' => $this->clientId,
                 'signature_redirect' => url("/documents/$document->uuid/callback"),
                 'noemails' => true,
                 'container_type' => "pdf",

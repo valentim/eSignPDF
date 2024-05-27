@@ -35,5 +35,10 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
+    'eideasy' => [
+        'client_id' => env('EIDEASY_CLIENT_ID'),
+        'client_secret' => env('EIDEASY_CLIENT_SECRET'),
+        'redirect' => env('EIDEASY_REDIRECT_URI'),
+    ],
 
 ];

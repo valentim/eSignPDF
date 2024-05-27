@@ -7,6 +7,7 @@ use App\Infrastructure\Services\EIDEasyService;
 use App\Domain\Document\DocumentRepository;
 use App\Domain\Document\Document;
 use App\Infrastructure\Services\DocumentType;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class DocumentService
@@ -23,8 +24,15 @@ class DocumentService
 
     public function downloadSignedFile(Document $document)
     {
-        $file = $this->eIDEasyService->downloadSignedFile($document);
+        try {
+            $file = $this->eIDEasyService->downloadSignedFile($document);
+        } catch (\Exception $e) {
+            Log::error("Failed to download signed file from eID Easy", ['document' => $document]);
+            throw new \Exception("File download failed");
+        }
+
         if (!$this->s3Service->uploadFile("/documents/{$document->filename}", $file)) {
+            Log::error("Failed to upload signed file to S3");
             throw new \Exception("File upload failed");
         }
 
@@ -51,37 +59,61 @@ class DocumentService
             ]);
 
             if (!$this->s3Service->uploadFile("/documents/{$document->uuid}_{$document->filename}", $fileContent)) {
+                Log::error("Failed to upload signed file to S3", ['document' => $document]);
                 throw new \Exception("File upload failed");
             }
 
             $originalFileUpdatedAt = Carbon::now();
         }
 
-        [$doc_id, $signing_page_url] = $this->eIDEasyService->prepareFilesForSigning($fileContent, $document);
+        try {
+            [$doc_id, $signing_page_url] = $this->eIDEasyService->prepareFilesForSigning($fileContent, $document);
 
-        $document = $this->documentRepository->update($document, [
-            'doc_id' => $doc_id,
-            'signing_page_url' => $signing_page_url,
-            'original_file_upload_at' => $originalFileUpdatedAt
-        ]);
+            $document = $this->documentRepository->update($document, [
+                'doc_id' => $doc_id,
+                'signing_page_url' => $signing_page_url,
+                'original_file_upload_at' => $originalFileUpdatedAt
+            ]);
 
-        return $document;
+            return $document;
+        } catch (\Exception $e) {
+            Log::error("Failed to prepare files for signing", ['document' => $document]);
+            throw new \Exception("File signing failed");
+        }
     }
 
     public function deleteFiles(Document $document)
     {
-        $this->s3Service->deleteFile($document, DocumentType::Original);
-        $this->s3Service->deleteFile($document, DocumentType::Signed);
-        $this->documentRepository->delete($document);
+        DB::beginTransaction();
+        try {
+            $this->s3Service->deleteFile($document, DocumentType::Original);
+            $this->s3Service->deleteFile($document, DocumentType::Signed);
+            $this->documentRepository->delete($document);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Failed to delete files", ['document' => $document]);
+            throw new \Exception("File deletion failed");
+        }
     }
 
     public function getOriginalFile(Document $document)
     {
-        return $this->s3Service->downloadFile($document, DocumentType::Original);
+        try {
+            return $this->s3Service->downloadFile($document, DocumentType::Original);
+        } catch (\Exception $e) {
+            Log::error("Failed to download original file from S3", ['document' => $document, 'type' => DocumentType::Original]);
+            throw new \Exception("File download failed");
+        }
     }
 
     public function getTemporaryDownloadUrl(Document $document, DocumentType $type, $expiration = 60)
     {
-        return $this->s3Service->getTemporaryUrl($document, $type, Carbon::now()->addMinutes($expiration));
+        try {
+            return $this->s3Service->getTemporaryUrl($document, $type, Carbon::now()->addMinutes($expiration));
+        } catch (\Exception $e) {
+            Log::error("Failed to get temporary download URL", ['document' => $document, 'type' => $type]);
+            throw new \Exception("Temporary URL generation failed");
+        }
     }
 }

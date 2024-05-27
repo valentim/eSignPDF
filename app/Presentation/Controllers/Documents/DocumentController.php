@@ -14,6 +14,8 @@ use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Support\Facades\Validator;
 use GuzzleHttp\Client;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+
 
 class DocumentController extends Controller
 {
@@ -26,51 +28,11 @@ class DocumentController extends Controller
         $this->httpClient = $httpClient;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/documents",
-     *     tags={"documents"},
-     *     summary="Get all documents",
-     *     description="Returns a list of documents",
-     *     @OA\Response(
-     *         response=200,
-     *         description="A list of documents",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Document"))
-     *     )
-     * )
-     */
     public function index()
     {
         return Document::all();
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/documents/{document}/download",
-     *     tags={"documents"},
-     *     summary="Generate a temporary download URL for a document",
-     *     description="Generates a temporary download URL for a document based on its type",
-     *     @OA\Parameter(
-     *         name="document",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="type", type="string", description="Document type")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Temporary URL generated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="url", type="string")
-     *         )
-     *     )
-     * )
-     */
     public function download(Request $request, Document $document)
     {
         $validated = $request->validate([
@@ -84,25 +46,6 @@ class DocumentController extends Controller
         return response()->json(['url' => $temporaryUrl]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/documents/{document}/sign",
-     *     tags={"documents"},
-     *     summary="Sign a document",
-     *     description="Signs a document and returns the updated document",
-     *     @OA\Parameter(
-     *         name="document",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Document signed",
-     *         @OA\JsonContent(ref="#/components/schemas/Document")
-     *     )
-     * )
-     */
     public function sign(Request $request, Document $document)
     {
         $file = $this->documentService->getOriginalFile($document, DocumentType::Original);
@@ -111,35 +54,6 @@ class DocumentController extends Controller
         return response()->json(['document' => $updatedDocument]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/documents/upload",
-     *     tags={"documents"},
-     *     summary="Upload a document",
-     *     description="Uploads a document and returns the document information",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(property="file", type="string", format="binary")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Document uploaded",
-     *         @OA\JsonContent(ref="#/components/schemas/Document")
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Bad request",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string")
-     *         )
-     *     )
-     * )
-     */
     public function upload(Request $request)
     {
         $rules = [
@@ -149,6 +63,8 @@ class DocumentController extends Controller
         $validator = Validator::make($request->all(), $rules);
     
         if ($validator->fails()) {
+            Log::error('Document upload failed due to validation error', ['errors' => $validator->errors()]);
+
             return response()->json(['error' => $validator->errors()->first()], 400);
         }
 
@@ -159,27 +75,6 @@ class DocumentController extends Controller
         return response()->json(['document' => $document]);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/documents/{document}",
-     *     tags={"documents"},
-     *     summary="Delete a document",
-     *     description="Deletes a document and returns a confirmation message",
-     *     @OA\Parameter(
-     *         name="document",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Document deleted",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="File deleted")
-     *         )
-     *     )
-     * )
-     */
     public function delete(Document $document)
     {
         $this->documentService->deleteFiles($document);
@@ -187,24 +82,6 @@ class DocumentController extends Controller
         return response()->json(['message' => 'File deleted']);
     }
 
-     /**
-     * @OA\Post(
-     *     path="/documents/{document}/callback",
-     *     tags={"documents"},
-     *     summary="Handle document callback",
-     *     description="Handles the callback for a document and redirects to the dashboard",
-     *     @OA\Parameter(
-     *         name="document",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=302,
-     *         description="Redirect to dashboard"
-     *     )
-     * )
-     */
     public function callback(Request $request, Document $document)
     {
         if ($document->signed_file_upload_at === null) {

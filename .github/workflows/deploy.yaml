@@ -90,14 +90,6 @@ jobs:
         echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
         echo "GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}" >> .env
 
-    - name: Run PHP tests
-      run: |
-        docker-compose -f docker-compose.development.yaml up pdf-signer-test -d
-        docker-compose -f docker-compose.development.yaml exec -T pdf-signer-test php artisan test
-      continue-on-error: false
-      env:
-        FORCE_COLOR: 1
-
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:

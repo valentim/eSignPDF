@@ -19,6 +19,13 @@ Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle'])->na
 Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
 Route::get('/documents/{document:uuid}/callback', [DocumentController::class, 'callback']);
 
+Route::get('/docs/api-docs.json', function () {
+    return response()->file(public_path('docs/api-docs.json'));
+});
+
+Route::get('/api/documentation', function () {
+    return view('swagger-ui');
+});
 
 Route::get('/{any}', function () {
     return view('app');
