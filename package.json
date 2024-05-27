@@ -1,0 +1,28 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.3.0",
+        "axios": "^1.7.2",
+        "laravel-vite-plugin": "^1.0.4",
+        "vite": "^5.2.11"
+    },
+    "dependencies": {
+        "@uppy/core": "^3.11.3",
+        "@uppy/dashboard": "^3.8.3",
+        "@uppy/drag-drop": "^3.1.0",
+        "@uppy/file-input": "^3.1.2",
+        "@uppy/progress-bar": "^3.1.1",
+        "@uppy/react": "^3.3.1",
+        "@uppy/xhr-upload": "^3.6.7",
+        "date-fns": "^3.6.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-router-dom": "^6.23.1",
+        "react-toastify": "^10.0.5"
+    }
+}

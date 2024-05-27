@@ -1,0 +1,128 @@
+
+h1 {
+    text-align: center;
+}
+
+.document-list-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+  
+.document-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: background-color 0.3s ease;
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
+}
+  
+.document-list-item:hover {
+    background-color: #f9f9f9;
+}
+  
+.document-icon-name {
+    display: flex;
+    align-items: center;
+    flex: 1 1 100%; /* Take full width on smaller screens */
+}
+  
+.document-icon {
+    font-size: 24px;
+    margin-right: 10px;
+}
+  
+.document-name {
+    font-size: 16px;
+    color: #333;
+    flex: 1; /* Allow to grow */
+}
+  
+.document-actions {
+    display: flex;
+    gap: 10px;
+    flex: 1 1 100%; /* Take full width on smaller screens */
+    justify-content: flex-start; /* Align actions to the left on smaller screens */
+    margin-top: 10px; /* Add margin for spacing */
+}
+  
+.document-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    border-radius: 8px;
+    cursor: pointer;
+    flex: 1; /* Allow buttons to grow evenly */
+}
+  
+.document-button:hover {
+    background-color: #45a049;
+}
+  
+.document-button.delete {
+    background-color: #dc3545;
+}
+  
+  .document-button.delete:hover {
+    background-color: #c82333;
+  }
+
+.document-date {
+    font-size: 14px;
+    color: #666;
+    flex: 1 1 100%; /* Take full width on smaller screens */
+    text-align: right; /* Align date to the right */
+}
+  
+  /* Media queries for responsiveness */
+  @media (max-width: 768px) {
+    .document-list-item {
+        flex-direction: column; /* Stack items vertically on smaller screens */
+        align-items: flex-start; /* Align items to the start on smaller screens */
+    }
+
+    .document-icon-name {
+        margin-bottom: 10px; /* Add margin for spacing */
+        flex-direction: column; /* Stack icon and details vertically */
+        align-items: flex-start; /* Align items to the start on smaller screens */
+    }
+
+    .document-details {
+        margin-top: 5px; /* Add margin for spacing */
+    }
+
+    .document-date {
+        text-align: left; /* Align date to the left on smaller screens */
+        margin-top: 5px; /* Add margin for spacing */
+    }
+
+    .document-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+  }
+
+.uppy-Container {
+    width: 100% !important;
+    max-width: 1000px !important;
+    margin: 0 auto !important;
+    font-family: Arial, sans-serif !important;
+
+}
+.uppy-ProgressBar {
+    width: 100% !important;
+    max-width: 1000px !important;
+    height: 10px !important;
+}

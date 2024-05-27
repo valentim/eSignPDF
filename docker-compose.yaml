@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:  
+  pdf-signer:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: pdf-signer
+    container_name: pdf-signer
+    restart: unless-stopped
+    working_dir: /var/www
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www
+    networks:
+      - laravel_network
+
+  pdf-signer-mysql:
+    image: mysql:8
+    container_name: pdf-signer-mysql
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel_network
+
+networks:
+  laravel_network:
+    driver: bridge
+
+volumes:
+  mysql-data:

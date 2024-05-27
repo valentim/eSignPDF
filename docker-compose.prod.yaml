@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile.production
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www
+      # - ./.platform/nginx/nginx.conf:/etc/nginx/
+      - ./.platform/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    env_file:
+      - .env
+    depends_on:
+      - app-mysql
+    networks:
+      - app-network
+  app-mysql:
+    image: mysql:8
+    container_name: app-mysql
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
