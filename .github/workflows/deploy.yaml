@@ -35,11 +35,11 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-west-2
+        aws-region: eu-central-1
 
     - name: Deploy to Elastic Beanstalk
       run: |
         zip -r deploy.zip .
-        eb init -p docker your-app-name --region us-west-2
-        eb use your-environment-name
+        eb init -p docker eIDEasy --region eu-central-1
+        eb use eideasy-test-prod
         eb deploy

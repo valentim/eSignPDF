@@ -17,6 +17,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+artisan
+
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
