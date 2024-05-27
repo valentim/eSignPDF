@@ -9,20 +9,6 @@
       "ContainerPort": "80"
     }
   ],
-  "Volumes": [
-    {
-      "HostDirectory": "/var/www",
-      "ContainerDirectory": "/var/www"
-    },
-    {
-      "HostDirectory": "/etc/nginx/nginx.conf",
-      "ContainerDirectory": "/etc/nginx/nginx.conf"
-    },
-    {
-      "HostDirectory": "/etc/nginx/conf.d/default.conf",
-      "ContainerDirectory": "/etc/nginx/conf.d/default.conf"
-    }
-  ],
   "Environment": [
     {
       "Name": "ENV",
