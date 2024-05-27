@@ -18,9 +18,5 @@ yarn-error.log
 /.idea
 /.vscode
 artisan
-
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
+ecs-params.yaml
+ecs-trust-policy.json
