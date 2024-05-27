@@ -17,7 +17,7 @@ RUN apk update && apk add --no-cache \
 
 COPY . .
 
-COPY config/custom-php.ini /usr/local/etc/php/conf.d/
+COPY .platform/custom-php.ini /usr/local/etc/php/conf.d/
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
