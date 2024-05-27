@@ -37,9 +37,16 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-central-1
 
-    - name: Deploy to Elastic Beanstalk
-      run: |
-        zip -r deploy.zip .
-        eb init -p docker eIDEasy --region eu-central-1
-        eb use eideasy-test-prod
-        eb deploy
+    - name: Generate deployment package
+      run: zip -r deploy.zip . -x '*.git*'
+
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v22
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: eIDeasyTest
+        environment_name: eideasy-test-prod
+        version_label: 12345
+        region: eu-central-1
+        deployment_package: deploy.zip
