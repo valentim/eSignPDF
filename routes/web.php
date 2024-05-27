@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Presentation\Controllers\Auth\SocialiteController;
-use App\Presentation\Controllers\Document\DocumentController;
+use App\Presentation\Controllers\Documents\DocumentController;
 
 /*
 |--------------------------------------------------------------------------

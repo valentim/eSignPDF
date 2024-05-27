@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Presentation\Controllers\Auth\AuthController;
-use App\Presentation\Controllers\Document\DocumentController;
+use App\Presentation\Controllers\Documents\DocumentController;
+use App\Presentation\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +18,7 @@ use App\Presentation\Controllers\Document\DocumentController;
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/user', [UserController::class, 'user']);
     Route::get('/documents', [DocumentController::class, 'index']);
     Route::post('/documents', [DocumentController::class, 'upload']);
     Route::delete('/documents/{document:uuid}', [DocumentController::class, 'delete']);
