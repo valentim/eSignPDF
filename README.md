@@ -8,8 +8,8 @@
   - [Introduction](#introduction)
   - [Requirements](#requirements)
   - [Installation](#installation)
-  - [Project Structure](#project-structure)
   - [Running the Tests](#running-the-tests)
+  - [Project Structure](#project-structure)
   - [Usage Scenarios](#usage-scenarios)
     - [Scenario 1: Login](#scenario-1-login)
     - [Scenario 2: PDF Upload](#scenario-2-pdf-upload)
@@ -60,6 +60,19 @@ Follow these steps to run the project locally.
 3. Access the application:
     Open your browser and navigate to `http://localhost`.
 
+## Running the Tests
+
+1. Run the PHPUnit tests:
+    ```bash
+    php artisan test
+    ```
+
+2. You should see something similar to this image:
+<p align="center">
+  <img src="./tests.png" alt="Resultados dos Testes">
+</p>
+
+
 ## Project Structure
 This project structure follows a layered architecture approach, which separates concerns and organizes code into distinct layers. Each layer has a specific responsibility, making the codebase easier to maintain, test, and scale. The key layers include:
 
@@ -109,14 +122,6 @@ app/
             |-- Persistence/
                 |-- DocumentRepositoryImplTest.php
 ```
-
-
-## Running the Tests
-
-1. Run the PHPUnit tests:
-    ```bash
-    php artisan test
-    ```
 
 ## Usage Scenarios
 ### Scenario 1: Login

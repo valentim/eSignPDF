@@ -1,9 +1,9 @@
 {
     "openapi": "3.0.0",
     "info": {
-      "title": "Document Management API",
+      "title": "Document Upload and Sign API",
       "version": "1.0.0",
-      "description": "API documentation for the Document Management System"
+      "description": "API documentation for the Document Upload and Sign System"
     },
     "components": {
       "schemas": {
@@ -14,7 +14,7 @@
               "type": "integer",
               "description": "Document ID"
             },
-            "name": {
+            "filename": {
               "type": "string",
               "description": "Document name"
             },
@@ -23,10 +23,18 @@
               "format": "date-time",
               "description": "Creation timestamp"
             },
-            "updated_at": {
+            "signed_at": {
               "type": "string",
               "format": "date-time",
               "description": "Update timestamp"
+            },
+            "doc_id": {
+              "type": "string",
+              "description": "Document ID from the document service"
+            },
+            "uuid": {
+              "type": "string",
+              "description": "Public Document ID"
             }
           }
         }
