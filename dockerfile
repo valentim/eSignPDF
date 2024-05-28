@@ -23,12 +23,12 @@ RUN apk update && apk add --no-cache \
 
 COPY . .
 
-RUN npm install
-RUN npm run build
-
 COPY .platform/custom-php.ini /usr/local/etc/php/conf.d/
 
 RUN composer install --no-dev --optimize-autoloader
+
+RUN npm install
+RUN npm run build
 
 RUN chown -R www-data:www-data /var/www
 RUN chmod -R 777 /var/www/storage /var/www/bootstrap/cache

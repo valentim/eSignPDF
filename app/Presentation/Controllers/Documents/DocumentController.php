@@ -16,7 +16,6 @@ use GuzzleHttp\Client;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
-
 class DocumentController extends Controller
 {
     protected $documentService;
