@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class EIDEasyService
@@ -14,14 +15,14 @@ class EIDEasyService
     public function __construct(Client $client)
     {
         $this->client = $client;
-        $this->clientSecret = config('EIDEASY_CLIENT_SECRET');
-        $this->clientId = config('EIDEASY_CLIENT_ID');
-        $this->url = config('EIDEASY_URL');
+        $this->clientSecret = config('services.eideasy.client_id');
+        $this->clientId = config('services.eideasy.client_secret');
+        $this->url = config('services.eideasy.url');
     }
 
     public function downloadSignedFile($document)
     {
-        $response = $this->client->post("{$this->url}/api/signatures/download-signed-file", [
+        $payload = [
             'headers' => [
                 'Content-Type' => "application/json",
             ],
@@ -30,17 +31,30 @@ class EIDEasyService
                 'client_id' => $this->clientId,
                 'doc_id' => $document->doc_id,
             ],
-        ]);
+        ];
 
-        $data = json_decode($response->getBody()->getContents(), true);
-        $signedFileContents = base64_decode($data['signed_file_contents']);
+        Log::info('Payload for downloadSignedFile', $payload);
 
-        return $signedFileContents;
+        try {
+            $response = $this->client->post("{$this->url}/api/signatures/download-signed-file", $payload);
+
+            $content = $response->getBody()->getContents();
+
+            Log::info('Response from downloadSignedFile', ['content' => $content]);
+
+            $data = json_decode($content, true);
+            $signedFileContents = base64_decode($data['signed_file_contents']);
+
+            return $signedFileContents;
+        } catch (\Exception $e) {
+            Log::error('Failed to download signed file', ['error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 
     public function prepareFilesForSigning($fileContent, $document)
     {
-        $response = $this->client->post("{$this->url}api/signatures/prepare-files-for-signing", [
+        $payload = [
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
@@ -61,13 +75,26 @@ class EIDEasyService
                     ]
                 ]
             ],
-        ]);
-
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        return [
-            $data['doc_id'],
-            $data['signing_page_url']
         ];
+
+        Log::info('Payload for prepareFilesForSigning', $payload);
+        
+        try {
+            $response = $this->client->post("{$this->url}/api/signatures/prepare-files-for-signing", $payload);
+
+            $content = $response->getBody()->getContents();
+
+            Log::info('Response from prepareFilesForSigning', ['content' => $content]);
+
+            $data = json_decode($content, true);
+
+            return [
+                $data['doc_id'],
+                $data['signing_page_url']
+            ];
+        } catch (\Exception $e) {
+            Log::error('Failed to prepare files for signing', ['error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 }

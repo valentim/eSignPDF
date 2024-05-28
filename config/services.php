@@ -38,7 +38,7 @@ return [
     'eideasy' => [
         'client_id' => env('EIDEASY_CLIENT_ID'),
         'client_secret' => env('EIDEASY_CLIENT_SECRET'),
-        'redirect' => env('EIDEASY_REDIRECT_URI'),
+        'url' => env('EIDEASY_URL'),
     ],
 
 ];
