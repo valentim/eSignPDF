@@ -36,7 +36,10 @@ const Upload = ({ onUpload }) => {
                 const response = JSON.parse(responseText);
                 if (response.error) {
                     toast.error(response.error);
+                    return;
                 }
+
+                toast.error('An error occurred while uploading the file. Please try again.');
             },
             formData: true
         });
@@ -47,7 +50,7 @@ const Upload = ({ onUpload }) => {
             files.forEach(file => {
                 uppy.removeFile(file.id);
             });
-            console.log(successful, failed);
+
             if (successful.length > 0) {
                 const signingUrl = successful[0].response.body.document.signing_page_url;
                 onUpload(signingUrl);
