@@ -13,13 +13,6 @@ export default defineConfig({
     ],
     build: {
         outDir: 'public/build',
-        // rollupOptions: {
-        //   output: {
-        //     manualChunks: {
-        //       vendor: ['react', 'react-dom'],
-        //     },
-        //   },
-        // },
     },
     server: {
         host: '0.0.0.0',
@@ -32,8 +25,6 @@ export default defineConfig({
         alias: {
             '@': '/resources/js',
             '@css': '/resources/css',
-            // '@uppy/core/dist/style.css': resolve(__dirname, 'node_modules/@uppy/core/dist/style.css'),
-            // '@uppy/drag-drop/dist/style.css': resolve(__dirname, 'node_modules/@uppy/drag-drop/dist/style.css'),
         },
     }
 });
