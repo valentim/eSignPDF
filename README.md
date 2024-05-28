@@ -21,8 +21,8 @@
 ## Introduction
 The project is an e-signature solution called ESignPDF. It allows users to upload PDF files for signature and provides a dashboard to manage the signed documents.
 
-Demo version can be view here: [Demo](http://eideasy.xyz)
-API Documentation [here](http://eideasy.xyz/api/documentation)
+- Demo version can be view here: [Demo](http://eideasy.xyz) 
+- API Documentation [here](http://eideasy.xyz/api/documentation)
 
 Below are the key features implemented in this project:
 
@@ -35,6 +35,8 @@ To maintain the security and integrity of our files, all documents are stored in
 
 3. Modern Frontend with Vite and React
 The frontend is built using Vite and React, leveraging the latest in web development technologies for fast, efficient, and dynamic user interfaces. This setup provides a robust and responsive user experience.
+
+4. - Added CI/CD pipeline for automated deployment to AWS ECS.
 
 
 ## Requirements
