@@ -28,11 +28,11 @@ class DocumentService
         try {
             $file = $this->eIDEasyService->downloadSignedFile($document);
         } catch (\Exception $e) {
-            Log::error("Failed to download signed file from eID Easy", ['document' => $document]);
+            Log::error("Failed to download signed file from eID Easy", ['document' => $document, 'error' => $e->getMessage()]);
             throw new \Exception("File download failed");
         }
 
-        if (!$this->s3Service->uploadFile("/documents/{$document->filename}", $file)) {
+        if (!$this->s3Service->uploadFile("/documents/{$document->signed_filename}", $file)) {
             Log::error("Failed to upload signed file to S3");
             throw new \Exception("File upload failed");
         }
@@ -78,7 +78,7 @@ class DocumentService
 
             return $document;
         } catch (\Exception $e) {
-            Log::error("Failed to prepare files for signing", ['document' => $document]);
+            Log::error("Failed to prepare files for signing", ['document' => $document, 'error' => $e->getMessage()]);
             throw new \Exception("File signing failed");
         }
     }
@@ -113,7 +113,7 @@ class DocumentService
         try {
             return $this->s3Service->getTemporaryUrl($document, $type, Carbon::now()->addMinutes($expiration));
         } catch (\Exception $e) {
-            Log::error("Failed to get temporary download URL", ['document' => $document, 'type' => $type]);
+            Log::error("Failed to get temporary download URL", ['document' => $document, 'type' => $type, 'expiration' => $expiration, 'error' => $e->getMessage()]);
             throw new \Exception("Temporary URL generation failed");
         }
     }
