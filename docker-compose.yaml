@@ -2,7 +2,6 @@ version: '3'
 
 services:
   app:
-    image: thiagosvalentim/eideasy-test:latest
+    image: thiagosvalentim/eideasy-test:1.0.3
     ports:
       - "80:80"
-    container_name: app

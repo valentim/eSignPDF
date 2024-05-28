@@ -33,6 +33,10 @@ RUN npm run build
 RUN chown -R www-data:www-data /var/www
 RUN chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 
+RUN mkdir -p /var/lib/nginx/tmp/client_body && \
+    chown -R nginx:nginx /var/lib/nginx && \
+    chmod -R 755 /var/lib/nginx
+
 COPY .platform/nginx/nginx.conf /etc/nginx
 COPY .platform/nginx/default.conf /etc/nginx/conf.d/
 
