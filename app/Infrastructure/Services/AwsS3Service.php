@@ -3,6 +3,7 @@ namespace App\Infrastructure\Services;
 
 use Illuminate\Support\Facades\Storage;
 use App\Domain\Document\Document;
+use Illuminate\Support\Facades\Log;
 
 enum DocumentType: string {
     case Original = 'original';
@@ -19,7 +20,7 @@ class AwsS3Service
     public function downloadFile(Document $document, DocumentType $type)
     {
         $documentName = "{$document->uuid}_{$document->filename}";
-        if ($type->value == DocumentType::Signed) {
+        if ($type == DocumentType::Signed) {
             $documentName = $document->signed_filename;
         }
 
@@ -31,7 +32,7 @@ class AwsS3Service
     public function deleteFile(Document $document, DocumentType $type)
     {
         $documentName = "{$document->uuid}_{$document->filename}";
-        if ($type->value == DocumentType::Signed) {
+        if ($type == DocumentType::Signed) {
             $documentName = $document->signed_filename;
         }
 
@@ -43,7 +44,7 @@ class AwsS3Service
     public function getTemporaryUrl(Document $document, DocumentType $type, $expiration = 60)
     {
         $documentName = "{$document->uuid}_{$document->filename}";
-        if ($type->value == DocumentType::Signed) {
+        if ($type == DocumentType::Signed) {
             $documentName = $document->signed_filename;
         }
 
