@@ -63,6 +63,56 @@
               }
             }
           }
+        },
+        "post": {
+          "tags": [
+            "documents"
+          ],
+          "summary": "Upload a document",
+          "description": "Uploads a document and returns the document information",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Document uploaded",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Document"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       },
       "/api/documents/{document}/download": {
@@ -156,58 +206,6 @@
           }
         }
       },
-      "/api/documents/upload": {
-        "post": {
-          "tags": [
-            "documents"
-          ],
-          "summary": "Upload a document",
-          "description": "Uploads a document and returns the document information",
-          "requestBody": {
-            "required": true,
-            "content": {
-              "multipart/form-data": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "file": {
-                      "type": "string",
-                      "format": "binary"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Document uploaded",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Document"
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Bad request",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "error": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "/api/documents/{document}": {
         "delete": {
           "tags": [
@@ -250,7 +248,7 @@
           "tags": [
             "documents"
           ],
-          "summary": "Handle document callback",
+          "summary": "Handle document callback after the document is signed",
           "description": "Handles the callback for a document and redirects to the dashboard",
           "parameters": [
             {
