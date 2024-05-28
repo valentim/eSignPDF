@@ -8,6 +8,7 @@ use App\Domain\Document\DocumentRepository;
 use App\Domain\Document\Document;
 use App\Infrastructure\Services\DocumentType;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class DocumentService
