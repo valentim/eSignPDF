@@ -16,6 +16,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\HandlerStack;
 use App\Infrastructure\Services\DocumentType;
+use Illuminate\Support\Facades\DB;
 
 class DocumentServiceTest extends TestCase
 {
@@ -68,7 +69,7 @@ class DocumentServiceTest extends TestCase
         $this->assertEquals($docId, $document->doc_id);
     }
 
-    public function testFailureUpload()
+    public function testUploadFileExceptionInDownloadSignedFile()
     {
         $s3ServiceMock = Mockery::mock(AwsS3Service::class);
         $documentRepositoryMock = Mockery::mock(DocumentRepository::class);
@@ -92,14 +93,118 @@ class DocumentServiceTest extends TestCase
         $document->doc_id = '123456';
 
         $s3ServiceMock->shouldReceive('uploadFile')
-            // ->once()
-            // ->with("/documents/{$document->filename}", 'signed file content')
             ->andReturn(false);
 
         $this->expectException(\Exception::class);
 
         $document = $documentService->downloadSignedFile($document);
 
+    }
+
+    public function testDownloadSignedFileException()
+    {
+        $eIDEasyServiceMock = Mockery::mock(EIDEasyService::class);
+        $s3ServiceMock = Mockery::mock(AwsS3Service::class);
+        $documentRepositoryMock = Mockery::mock(DocumentRepository::class);
+
+        $documentService = new DocumentService($eIDEasyServiceMock, $s3ServiceMock, $documentRepositoryMock);
+
+        $documentMock = Mockery::mock(Document::class)->makePartial();
+        $documentMock->filename = 'document.pdf';
+        $documentMock->user_id = 1;
+        $documentMock->uuid = 'uuid1';
+        $documentMock->doc_id = '123456';
+
+        $eIDEasyServiceMock->shouldReceive('downloadSignedFile')
+            ->once()
+            ->andThrow(new \Exception("Download error"));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("File download failed");
+
+        $documentService->downloadSignedFile($documentMock);
+    }
+
+    public function testSignFilePrepareFilesForSigningException()
+    {
+        $eIDEasyServiceMock = Mockery::mock(EIDEasyService::class);
+        $s3ServiceMock = Mockery::mock(AwsS3Service::class);
+        $documentRepositoryMock = Mockery::mock(DocumentRepository::class);
+
+        $documentService = new DocumentService($eIDEasyServiceMock, $s3ServiceMock, $documentRepositoryMock);
+
+        Storage::fake('s3');
+        $file = UploadedFile::fake()->create('document.pdf', 1024);
+
+        $documentMock = Mockery::mock(Document::class)->makePartial();
+        $documentMock->filename = 'document.pdf';
+        $documentMock->user_id = 1;
+        $documentMock->uuid = 'uuid1';
+
+        $s3ServiceMock->shouldReceive('uploadFile')
+            ->once()
+            ->andReturn(true);
+
+        $documentRepositoryMock->shouldReceive('create')
+            ->once()
+            ->andReturn($documentMock);
+
+        $eIDEasyServiceMock->shouldReceive('prepareFilesForSigning')
+            ->once()
+            ->andThrow(new \Exception("Preparation error"));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("File signing failed");
+
+        $documentService->signFile($file, 1);
+    }
+
+    public function testDeleteFilesException()
+    {
+        $eIDEasyServiceMock = Mockery::mock(EIDEasyService::class);
+        $s3ServiceMock = Mockery::mock(AwsS3Service::class);
+        $documentRepositoryMock = Mockery::mock(DocumentRepository::class);
+
+        $documentService = new DocumentService($eIDEasyServiceMock, $s3ServiceMock, $documentRepositoryMock);
+
+        $documentMock = Mockery::mock(Document::class)->makePartial();
+        $documentMock->filename = 'document.pdf';
+        $documentMock->user_id = 1;
+        $documentMock->uuid = 'uuid1';
+
+        DB::shouldReceive('beginTransaction')->once();
+        DB::shouldReceive('rollBack')->once();
+        $s3ServiceMock->shouldReceive('deleteFile')
+            ->once()
+            ->andThrow(new \Exception("Deletion error"));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("File deletion failed");
+
+        $documentService->deleteFiles($documentMock);
+    }
+
+    public function testGetOriginalFileException()
+    {
+        $eIDEasyServiceMock = Mockery::mock(EIDEasyService::class);
+        $s3ServiceMock = Mockery::mock(AwsS3Service::class);
+        $documentRepositoryMock = Mockery::mock(DocumentRepository::class);
+
+        $documentService = new DocumentService($eIDEasyServiceMock, $s3ServiceMock, $documentRepositoryMock);
+
+        $documentMock = Mockery::mock(Document::class)->makePartial();
+        $documentMock->filename = 'document.pdf';
+        $documentMock->user_id = 1;
+        $documentMock->uuid = 'uuid1';
+
+        $s3ServiceMock->shouldReceive('downloadFile')
+            ->once()
+            ->andThrow(new \Exception("Download error"));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("File download failed");
+
+        $documentService->getOriginalFile($documentMock);
     }
 
     public function testGetTemporaryDownloadUrl()
@@ -138,4 +243,28 @@ class DocumentServiceTest extends TestCase
 
         $this->assertEquals('http://example.com/documents/document.pdf', $temporaryUrl);
     }
+
+    public function testGetTemporaryDownloadUrlException()
+    {
+        $eIDEasyServiceMock = Mockery::mock(EIDEasyService::class);
+        $s3ServiceMock = Mockery::mock(AwsS3Service::class);
+        $documentRepositoryMock = Mockery::mock(DocumentRepository::class);
+
+        $documentService = new DocumentService($eIDEasyServiceMock, $s3ServiceMock, $documentRepositoryMock);
+
+        $documentMock = Mockery::mock(Document::class)->makePartial();
+        $documentMock->filename = 'document.pdf';
+        $documentMock->user_id = 1;
+        $documentMock->uuid = 'uuid1';
+
+        $s3ServiceMock->shouldReceive('getTemporaryUrl')
+            ->once()
+            ->andThrow(new \Exception("Temporary URL error"));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Temporary URL generation failed");
+
+        $documentService->getTemporaryDownloadUrl($documentMock, DocumentType::Original);
+    }
+
 }
