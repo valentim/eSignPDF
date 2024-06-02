@@ -23,6 +23,11 @@ class DocumentService
         $this->documentRepository = $documentRepository;
     }
 
+    public function getDocuments($userId)
+    {
+        return $this->documentRepository->getByUserId($userId);
+    }
+
     public function downloadSignedFile(Document $document)
     {
         try {

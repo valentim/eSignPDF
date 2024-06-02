@@ -14,6 +14,11 @@ class DocumentRepositoryImpl implements DocumentRepository
         $this->document = $document;
     }
 
+    public function getByUserId(int $userId): array
+    {
+        return $this->document->where('user_id', $userId)->get()->all();
+    }
+
     public function create($data): Document
     {
         return $this->document->create($data);

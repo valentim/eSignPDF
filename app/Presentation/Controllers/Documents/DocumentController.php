@@ -29,7 +29,11 @@ class DocumentController extends Controller
 
     public function index()
     {
-        return Document::all();
+        $userId = Auth::id();
+
+        $documents = $this->documentService->getDocuments($userId);
+
+        return $documents;
     }
 
     public function download(Request $request, Document $document)
