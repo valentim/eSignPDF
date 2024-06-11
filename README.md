@@ -71,7 +71,7 @@ Follow these steps to run the project locally.
 
 2. You should see something similar to this image:
 <p align="center">
-  <img src="./tests.png" alt="Resultados dos Testes">
+  <img src="./image.png" alt="Resultados dos Testes">
 </p>
 
 
